@@ -1,0 +1,21 @@
+services:
+  kitsu-local:
+    image: kitsu-local:latest
+    container_name: kitsu-local
+    init: true
+    tty: true
+    stdin_open: true
+    ports:
+      - '8012:80'
+      - '1081:1080'
+    volumes:
+      - kitsu-local-postgres:/var/lib/postgresql
+      - kitsu-local-previews:/opt/zou/previews
+
+volumes:
+  kitsu-local-postgres:
+    external: true
+    name: kitsu-local-postgres
+  kitsu-local-previews:
+    external: true
+    name: kitsu-local-previews
