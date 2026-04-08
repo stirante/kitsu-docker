@@ -57,6 +57,7 @@ COPY --chown=postgres:postgres --chmod=0644 kitsu-docker/docker/postgresql-log.c
 RUN set -eux; \
     sed -i "s/bind .*/bind 127.0.0.1/g" /etc/redis/redis.conf; \
     git config --global --add advice.detachedHead false; \
+    ln -s /workspace/zou /opt/zou/zou-src; \
     python3 -m venv /opt/zou/env; \
     /opt/zou/env/bin/pip install --no-cache-dir --upgrade pip setuptools wheel; \
     /opt/zou/env/bin/pip install --no-cache-dir -e /workspace/zou; \
