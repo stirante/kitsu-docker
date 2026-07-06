@@ -59,11 +59,12 @@ if [[ "$MODE" == "sql" ]]; then
     docker exec "$CONTAINER" supervisorctl -c /etc/supervisord.conf stop 'zou-processes:*'
 
     echo "==> Dropping and recreating $DB_NAME"
-    docker exec "$CONTAINER" dropdb -h localhost -U "$DB_USER" --if-exists "$DB_NAME"
-    docker exec "$CONTAINER" createdb -h localhost -U "$DB_USER" -T template0 -E UTF8 --owner "$DB_USER" "$DB_NAME"
+    # No -h: connect via the unix socket so peer auth is used (no password needed)
+    docker exec "$CONTAINER" dropdb -U "$DB_USER" --if-exists "$DB_NAME"
+    docker exec "$CONTAINER" createdb -U "$DB_USER" -T template0 -E UTF8 --owner "$DB_USER" "$DB_NAME"
 
     echo "==> Importing $FILE_NAME"
-    docker exec -i "$CONTAINER" psql -h localhost -U "$DB_USER" -q -v ON_ERROR_STOP=1 "$DB_NAME" < "$CHOICE"
+    docker exec -i "$CONTAINER" psql -U "$DB_USER" -q -v ON_ERROR_STOP=1 "$DB_NAME" < "$CHOICE"
 
     echo "==> Running zou upgrade-db (in case the dump predates current schema)"
     docker exec "$CONTAINER" bash -c '. /opt/zou/env/bin/activate && zou upgrade-db'

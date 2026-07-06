@@ -44,7 +44,8 @@ if ! docker inspect "$CONTAINER" >/dev/null 2>&1; then
 fi
 
 echo "==> [1/2] SQL dump of '$DB_NAME' from $CONTAINER"
-docker exec "$CONTAINER" pg_dump -h localhost -U "$DB_USER" "$DB_NAME" > "$SQL_FILE.tmp"
+# No -h: connect via the unix socket so peer auth is used (no password needed)
+docker exec "$CONTAINER" pg_dump -U "$DB_USER" "$DB_NAME" > "$SQL_FILE.tmp"
 mv "$SQL_FILE.tmp" "$SQL_FILE"
 echo "    wrote $SQL_FILE ($(du -h "$SQL_FILE" | cut -f1))"
 
