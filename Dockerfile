@@ -74,7 +74,9 @@ RUN set -eux; \
     /opt/zou/env/bin/pip install --no-cache-dir --upgrade pip setuptools wheel; \
     git clone --depth 1 --branch "${ZOU_REF}" "${ZOU_REPO}" /opt/zou/zou-src; \
     /opt/zou/env/bin/pip install --no-cache-dir -e /opt/zou/zou-src; \
-    /opt/zou/env/bin/pip install --no-cache-dir sendria psycopg2-binary; \
+    # newer bcrypt breaks passlib 1.7.4 (pulled in by sendria): no __about__ attr
+    # and hard error on >72-byte passwords during backend detection
+    /opt/zou/env/bin/pip install --no-cache-dir sendria "bcrypt<4" psycopg2-binary; \
     rm /etc/nginx/sites-enabled/default
 
 # Symlink sendria so Supervisor finds it
